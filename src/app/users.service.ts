@@ -16,16 +16,6 @@ export class UsersService {
     };
   }
 
-  // get the user data
-  getUser(username: string): any {
-    console.log('service getting user ', username);
-    return this.http.get(`${environment.apiURL}/api/user`, {
-      params: {
-        username: username
-      }
-    });
-  }
-
   validateUser(username: string, password: string): any {
     const body = {
       username: username,

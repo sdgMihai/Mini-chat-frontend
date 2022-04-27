@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit {
         console.log(data);
         if (data) { // ['success']
           localStorage.setItem('username', this.username);
-          this.router.navigateByUrl('/chat');
+          this.router.navigateByUrl('/channel');
           // store jwt
           localStorage.setItem('jwtToken', data.accessToken);
         } else {
