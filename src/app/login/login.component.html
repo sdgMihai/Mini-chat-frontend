@@ -44,7 +44,7 @@
             <div class="control">
               <div class="columns">
                 <div class="column is-two-fifths">
-                  <input class="input" type="text" placeholder="username" [(ngModel)]="newUserUsername" name="newUserUsername">
+                  <input class="input" type="email" placeholder="email" [(ngModel)]="newUserUsername" name="newUserUsername">
                 </div>
               </div>
             </div>
@@ -58,11 +58,20 @@
               </div>
             </div>
 
-            <label class="label">Email</label>
+            <label class="label">First Name</label>
             <div class="control">
               <div class="columns">
                 <div class="column is-two-fifths">
-                  <input class="input" type="email" placeholder="email" [(ngModel)]="newUserEmail" name="newUserEmail">
+                  <input class="input is-success" type="text" placeholder="Success input" [(ngModel)]="newUserFirstName" name="newUserFirstName">
+                </div>
+              </div>
+            </div>
+
+            <label class="label">Last Name</label>
+            <div class="control">
+              <div class="columns">
+                <div class="column is-two-fifths">
+                  <input class="input is-success" type="text" placeholder="Success input" [(ngModel)]="newUserLastName" name="newUserLastName">
                 </div>
               </div>
             </div>
