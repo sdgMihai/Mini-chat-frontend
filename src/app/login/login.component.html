@@ -1,0 +1,84 @@
+<section class="hero is-medium has-background-primary">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h1 class="title is-1">Welcome to Mini-Chat!</h1>
+      <h1 class="subtitle is-2">The Penguins</h1>
+    </div>
+  </div>
+</section>
+<br><br>
+<div class="container">
+  <div class="tabs is-centered">
+    <ul>
+      <li [ngClass]="{'is-active': myLogin === 0}"><a (click)="myLogin = 0">Sign in</a></li>
+      <li [ngClass]="{'is-active': myLogin === 1}"><a (click)="myLogin = 1">Sign up</a></li>
+      <li [ngClass]="{'is-active': myLogin === 2}"><a (click)="myLogin = 2">About us</a></li>
+    </ul>
+  </div>
+  <div class="notification" *ngIf="myLogin === 0; else signUP">
+    <form (submit)="login()">
+      <div class="field has-addons has-addons-centered">
+        <!--        <label class="label is-large">Name:</label>-->
+        <div class="control">
+          <input class="input" type="text" placeholder="Enter your name" [(ngModel)]='username' id='username' name='username'>
+        </div>
+        <!--        <label class="label is-large">Password:</label>-->
+        <div class="control">
+          <input class="input" type="password" placeholder="password" [(ngModel)]='password' id='password' name='password'>
+        </div>
+        <div class="control">
+          <button class="button is-primary">log in</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+  <ng-template #signUP>
+    <ng-container *ngIf="myLogin === 1;else aboutUs">
+      <div class="notification" >
+        <div class="box">
+          <h2 class="title is-3">Sign up:</h2>
+          <div class="field">
+            <label class="label">Username</label>
+            <div class="control">
+              <div class="columns">
+                <div class="column is-two-fifths">
+                  <input class="input" type="text" placeholder="username" [(ngModel)]="newUserUsername" name="newUserUsername">
+                </div>
+              </div>
+            </div>
+
+            <label class="label">Password</label>
+            <div class="control">
+              <div class="columns">
+                <div class="column is-two-fifths">
+                  <input class="input" type="password" placeholder="password" [(ngModel)]="newUserPassword" name="newUserPassword">
+                </div>
+              </div>
+            </div>
+
+            <label class="label">Email</label>
+            <div class="control">
+              <div class="columns">
+                <div class="column is-two-fifths">
+                  <input class="input" type="email" placeholder="email" [(ngModel)]="newUserEmail" name="newUserEmail">
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="control">
+              <button class="button" (click)="createUser()">Sign up</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </ng-template>
+
+  <ng-template  #aboutUs>
+    <div class="notification" >
+      This is a project developed by Gheoace Mihai and Stefan Daniel.
+    </div>
+  </ng-template>
+</div>
