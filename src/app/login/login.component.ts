@@ -16,7 +16,8 @@ export class LoginComponent implements OnInit {
   // create new user fields
   newUserUsername = '';
   newUserPassword = '';
-  newUserEmail = '';
+  newUserFirstName = '';
+  newUserLastName = '';
 
   myLogin: number | undefined;
 
@@ -38,15 +39,16 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    // https://blog.angular-university.io/angular-jwt-authentication/
     // check password via POST request
     this.usersService.validateUser(this.username, this.password).subscribe(
-        (data: { accessToken: string; }) => {
+        (data: { accessToken: string; first_name: string; last_name: string}) => {
         console.log('Received data from validation');
         console.log(data);
-        if (data) { // ['success']
+        if (data) {
           localStorage.setItem('username', this.username);
-          this.router.navigateByUrl('/chat');
+          localStorage.setItem('firstName', data.first_name);
+          localStorage.setItem('lastName', data.last_name);
+          this.router.navigateByUrl('/channel');
           // store jwt
           localStorage.setItem('jwtToken', data.accessToken);
         } else {
@@ -72,33 +74,31 @@ export class LoginComponent implements OnInit {
       alert('Password field cannot be blank');
       return;
     }
-    this.usersService.userExists(this.newUserUsername).subscribe(
-        (data: boolean) => {
-        console.log('user exists {}', data);
-        if (data) {
-          alert('This user already exists');
-          return;
-        }
-      }, (err: { name: any; }) => {
-        console.error(err.name);
-      },
-      () => {
-
-      }
-    );
+    if (this.newUserFirstName === '') {
+      alert('First Name field cannot be blank');
+      return;
+    }
+    if (this.newUserLastName === '') {
+      alert('Last Name field cannot be blank');
+      return;
+    }
 
     console.log('Creating new user!');
     // console.log(this.newUserUsername, this.newUserPassword, this.newUserEmail);
-    this.usersService.createUser(this.newUserUsername, this.newUserPassword, this.newUserEmail).subscribe(
+    this.usersService.createUser(this.newUserUsername, this.newUserPassword, this.newUserFirstName, this.newUserLastName).subscribe(
         (data: any) => {
-        console.log(data);
+          localStorage.setItem('username', this.username);
+          localStorage.setItem('firstName', data.first_name);
+          localStorage.setItem('lastName', data.last_name);
+          localStorage.setItem('jwtToken', data.accessToken);
+          this.router.navigateByUrl('/channel');
       },
         (err: { name: any; }) => {
         console.error(err.name);
       },
       () => {
         console.log();
-        this.newUserEmail = '';
+        this.newUserFirstName = '';
         this.newUserPassword = '';
         this.newUserUsername = '';
       }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from "../environments/environment";
 
@@ -7,23 +7,14 @@ import {environment} from "../environments/environment";
 })
 export class UsersService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   // generate the headers for content-type as JSON in a POST request
   genHeadersJSON(): any {
     return {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json'})
+      headers: new HttpHeaders({'Content-Type': 'application/json'})
     };
-  }
-
-  // get the user data
-  getUser(username: string): any {
-    console.log('service getting user ', username);
-    return this.http.get(`${environment.apiURL}/api/user`, {
-      params: {
-        username: username
-      }
-    });
   }
 
   validateUser(username: string, password: string): any {
@@ -34,17 +25,14 @@ export class UsersService {
     return this.http.post(environment.apiURL + '/login', JSON.stringify(body), this.genHeadersJSON());
   }
 
-  createUser(username: string, password: string, email: string) {
+  createUser(username: string, password: string, firstName: string, lastName: string): any {
     const body = {
       username: username,
       password: password,
-      email: email
+      first_name: firstName,
+      last_name: lastName
     };
-    return this.http.post(environment.apiURL + '/api/user/create', JSON.stringify(body), this.genHeadersJSON());
-  }
-
-  userExists(username: string): any {
-    return this.http.get(`${environment.apiURL}/api/user/${username}`);
+    return this.http.post(environment.apiURL + '/register', JSON.stringify(body), this.genHeadersJSON());
   }
 
 }
