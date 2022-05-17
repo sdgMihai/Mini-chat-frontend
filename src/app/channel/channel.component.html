@@ -2,11 +2,42 @@
   <div class="hero-body">
     <div class="container">
       <h1 class="title is-1">Penguins chat</h1>
-      <h2 class="subtitle is-5">User: {{username}}</h2>
+      <h2 class="subtitle is-5">User: {{this.user.getName()}}</h2>
     </div>
   </div>
 </section>
 
 <div class="container">
+  <div class="hero-body">
+    <div class="notification">
+      <div *ngFor="let message of messages">
+        <article class="message is-primary">
+          <!--                             display message as text-->
+          <div class="message-body" *ngIf="message.sender_name !== this.user.getName() ">
+            {{message.sender_name}}: {{message.data}}
+          </div>
 
+          <div class="level-right">
+            <div class="message-body level-item" *ngIf=" message.sender_name === this.user.getName()">
+              me: {{message.data}}
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO FOOTER -->
+  <div class="hero-foot">
+    <div class="navbar is-fixed-bottom has-background-primary">
+      <div class="container">
+        <div class="navbar-brand">
+          <div class="navbar-item">
+            <input [(ngModel)]="newMessage" (keyup)="$event.keyCode == 13 && sendMessage()"/>
+            <button (click)="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
