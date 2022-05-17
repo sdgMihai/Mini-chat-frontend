@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import {ErrorHandler, NgModule} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -9,13 +9,16 @@ import {LoginInterceptor} from "./login.interceptor";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {SocketService} from "./socket.service";
 import { ChannelComponent } from './channel/channel.component';
+import { ErrorComponent } from './error/error.component';
+import {ErrorService} from "./error.service";
 
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    ChannelComponent
+    ChannelComponent,
+    ErrorComponent
   ],
   imports: [
     BrowserModule,
@@ -28,6 +31,10 @@ import { ChannelComponent } from './channel/channel.component';
       provide : HTTP_INTERCEPTORS,
       useClass: LoginInterceptor,
       multi   : true,
+    },
+    {
+      provide: ErrorHandler,
+      useClass: ErrorService
     }
   ],
   bootstrap: [AppComponent]
