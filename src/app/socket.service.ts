@@ -2,36 +2,77 @@ import {Injectable} from '@angular/core';
 import {Observable, Observer} from "rxjs";
 import {environment} from "../environments/environment";
 import {io} from "socket.io-client";
+import {Message} from "./Message";
+import {User} from "./User";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketService {
 
+  unreadMessages: Message[];
   private url = environment.socketURL;
-  private socket = io(this.url, {
-    extraHeaders: {'Authorization': "Bearer " + localStorage.getItem("jwtToken")}
-  });
+  private socket;
 
   constructor() {
+    this.socket = io(this.url, {
+      extraHeaders: {'Authorization': "Bearer " + localStorage.getItem("jwtToken")}
+    });
+    this.unreadMessages = [];
 
+    this.logConnection().subscribe(() => {
+    });
   }
+
+  public onlineUsers() {
+    return new Observable((observer: Observer<any>) => {
+      this.socket.on('online_users', (msg: { users: User[] }) => {
+        console.log("list of users already online: " + JSON.stringify(msg));
+        observer.next(msg);
+        observer.complete();
+      });
+    });
+  }
+
 
   public joinChannel() {
     let unreadMessages: any[];
+    const withTimeout = (onSuccess: { (messages: Message[]): void; apply?: any; }
+      , onTimeout: { (): void; (): void; }
+      , timeout: number) => {
+      let called = false;
+
+      const timer = setTimeout(() => {
+        if (called) return;
+        called = true;
+        if (onTimeout) {
+          onTimeout();
+        }
+      }, timeout);
+
+      return (...args: any) => {
+        if (called) return;
+        called = true;
+        clearTimeout(timer);
+        onSuccess.apply(this, args);
+      }
+    }
     return new Observable((observer: Observer<any>) => {
-      this.socket.on("unread_messages", (messages) => {
-        unreadMessages = messages;
-      })
-      observer.next(unreadMessages);
-      observer.complete();
-    })
+      this.socket.emit("unread_messages", "ready", withTimeout((messages: Message[]) => {
+        if (messages.length >= 1) {
+          unreadMessages.push(...messages);
+        }
+        observer.next(unreadMessages);
+        observer.complete();
+      }, () => {
+        console.log("timeout!");
+      }, 3000));
+    });
   }
 
   public logConnection() {
     return new Observable((observer: Observer<any>) => {
       this.socket.on('connect', () => {
-        console.log('The client has connected with the server. Username: ' + localStorage.getItem('username'));
         observer.next('connect');
         observer.complete();
       });
@@ -39,7 +80,6 @@ export class SocketService {
   }
 
   public sendMessage(username: string, message: string) {
-    console.log('Sending: ' + message);
     const content = {
       user_id: username,
       message: message,
@@ -47,12 +87,10 @@ export class SocketService {
     this.socket.emit('send_message', content);
   }
 
-  public onlineUsers() {
+  public newOnlineUser() {
     return new Observable((observer: Observer<any>) => {
       this.socket.on('new_connection', (msg) => {
-        console.log("new connection msg: " + JSON.stringify(msg));
         observer.next(msg);
-
       });
     });
   }
@@ -69,14 +107,8 @@ export class SocketService {
   public getMessage() {
     return new Observable((observer: Observer<any>) => {
       this.socket.on('receive_message', (incoming: { sender_id: string, data: string, sent_at: any }) => {
-        console.log("incoming msg: " + JSON.stringify(incoming));
         observer.next(incoming);
       });
     });
   }
-
-
 }
-
-
-

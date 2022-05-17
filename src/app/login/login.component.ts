@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {UsersService} from '../users.service';
+import {User} from "../User";
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,8 @@ export class LoginComponent implements OnInit {
 
   myLogin: number | undefined;
 
-  constructor(private router: Router, private usersService: UsersService) { }
+  constructor(private router: Router, private usersService: UsersService) {
+  }
 
 
   ngOnInit(): void {
@@ -41,16 +43,13 @@ export class LoginComponent implements OnInit {
 
     // check password via POST request
     this.usersService.validateUser(this.username, this.password).subscribe(
-        (data: { accessToken: string; first_name: string; last_name: string}) => {
+      (data: { accessToken: string; first_name: string; last_name: string }) => {
         console.log('Received data from validation');
         console.log(data);
         if (data) {
-          localStorage.setItem('username', this.username);
-          localStorage.setItem('firstName', data.first_name);
-          localStorage.setItem('lastName', data.last_name);
-          this.router.navigateByUrl('/channel');
-          // store jwt
+          localStorage.setItem('user', JSON.stringify(new User(undefined, data.first_name, data.last_name)));
           localStorage.setItem('jwtToken', data.accessToken);
+          this.router.navigateByUrl('/channel');
         } else {
           alert('Invalid username or password');
         }
@@ -84,20 +83,16 @@ export class LoginComponent implements OnInit {
     }
 
     console.log('Creating new user!');
-    // console.log(this.newUserUsername, this.newUserPassword, this.newUserEmail);
     this.usersService.createUser(this.newUserUsername, this.newUserPassword, this.newUserFirstName, this.newUserLastName).subscribe(
-        (data: any) => {
-          localStorage.setItem('username', this.username);
-          localStorage.setItem('firstName', data.first_name);
-          localStorage.setItem('lastName', data.last_name);
-          localStorage.setItem('jwtToken', data.accessToken);
-          this.router.navigateByUrl('/channel');
+      (data: any) => {
+        localStorage.setItem('user', JSON.stringify(new User(undefined, data.first_name, data.last_name)));
+        localStorage.setItem('jwtToken', data.accessToken);
+        this.router.navigateByUrl('/channel');
       },
-        (err: { name: any; }) => {
+      (err: { name: any; }) => {
         console.error(err.name);
       },
       () => {
-        console.log();
         this.newUserFirstName = '';
         this.newUserPassword = '';
         this.newUserUsername = '';
