@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
 
     // check password via POST request
     this.usersService.validateUser(this.username, this.password).subscribe(
-      (data: { accessToken: string; first_name: string; last_name: string }) => {
+      (data: { accessToken: string; first_name: string; last_name: string; onlineUsers: string }) => {
         console.log('Received data from validation');
         console.log(data);
         if (data) {

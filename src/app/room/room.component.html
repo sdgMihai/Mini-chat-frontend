@@ -1,0 +1,38 @@
+<div class="roomTile">
+    <div class="roomHeader">
+        <div class="roomWithHeader">
+            <div class="roomWithTitle">
+                Room with
+            </div>
+            <div class="trashIcon" (click)="onDeleteRoom()">
+                <span class="fa fa-trash fa-2x clickable"></span>
+            </div>
+        </div>
+        <div class="ReceiverNameTitle">
+            {{ receiver.firstName + ' ' + receiver.lastName }}
+        </div>
+    </div>
+
+    <div class="roomFooter">
+        <input class="input" type="text" [(ngModel)]='dataToSend'>
+        <button class="button is-secondary" (click)="onSendMessage()">Send</button>
+    </div>
+
+    <div class="messagesTile">
+        <div
+            *ngFor="let message of messages"
+            [ngClass]="isMessageSentBySender(message) ? 'senderMessageTile' : 'receiverMessageTile'"
+        >
+            <div
+                [ngClass]="isMessageSentBySender(message) ? 'senderMessageContent' : 'receiverMessageContent'"
+            >
+                {{ message.data }}
+            </div>
+            <div
+            [ngClass]="isMessageSentBySender(message) ? 'senderMessageTime' : 'receiverMessageTime'"
+            >
+                {{ message.sentAt }}
+            </div>
+        <div>
+    </div>
+</div>

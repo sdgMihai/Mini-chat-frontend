@@ -9,6 +9,7 @@ import {LoginInterceptor} from "./login.interceptor";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {SocketService} from "./socket.service";
 import { ChannelComponent } from './channel/channel.component';
+import { RoomComponent } from './room/room.component';
 import { ErrorComponent } from './error/error.component';
 import {ErrorService} from "./error.service";
 
@@ -18,6 +19,7 @@ import {ErrorService} from "./error.service";
     AppComponent,
     LoginComponent,
     ChannelComponent,
+    RoomComponent,
     ErrorComponent
   ],
   imports: [

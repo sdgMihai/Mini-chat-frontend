@@ -1,0 +1,99 @@
+.roomTile {
+    display: flex;
+    flex-direction: column;
+}
+
+.roomHeader {
+    min-height: 100px;
+    max-height: 100px;
+    background-color: #00d1b2;
+
+    display: flex;
+    flex-direction: column;
+    order: 0;
+}
+
+.roomWithHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.roomWithTitle {
+    font-size: 32px;
+    margin-left: 4px;
+}
+
+.trashIcon {
+    margin-right: 4px;
+}
+
+.ReceiverNameTitle {
+    font-size: 24px;
+    text-align: center;
+}
+
+.roomFooter {
+    min-height: 50px;
+    max-height: 50px;
+    background-color: #00d1b2;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    order: 2;
+}
+
+.messagesTile {
+    min-height: 332px;
+    max-height: 332px;
+    overflow: auto;
+    margin: 4px;
+    
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    order: 1;
+}
+
+.senderMessageTile {
+    align-self: flex-end;
+    width: 190px;
+    border-radius: 16px;
+    background-color: #00d1b2;
+}
+
+.receiverMessageTile {
+    align-self: flex-start;
+    width: 190px;
+    border-radius: 16px;
+    background-color: #00d1b2;
+}
+
+.senderMessageContent {
+    margin-right: 8px;
+    margin-bottom: 2px;
+    text-align: right;
+}
+
+.receiverMessageContent {
+    margin-left: 8px;
+    margin-bottom: 2px;
+    text-align: left;
+}
+
+.senderMessageTime {
+    font-size: 10px;
+    margin-right: 8px;
+    margin-bottom: 2px;
+    text-align: right;
+    color: #7a7a7a;
+}
+
+.receiverMessageTime {
+    font-size: 10px;
+    margin-left: 8px;
+    margin-bottom: 2px;
+    text-align: left;
+    color: #7a7a7a;
+}

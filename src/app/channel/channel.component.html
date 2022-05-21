@@ -8,11 +8,11 @@
 </section>
 
 <div class="container">
+  <!--
   <div class="hero-body">
     <div class="notification">
       <div *ngFor="let message of messages">
         <article class="message is-primary">
-          <!--                             display message as text-->
           <div class="message-body" *ngIf="message.sender_name !== this.user.getName() ">
             {{message.sender_name}}: {{message.data}}
           </div>
@@ -26,8 +26,43 @@
       </div>
     </div>
   </div>
+  -->
 
-  <!-- HERO FOOTER -->
+  <div class="roomTiles">
+    <app-room
+      class="roomTile"
+      *ngFor="let receiver of users; let i = index"
+      [receiver]="receiver"
+      [messages]="messagesWithUsers[i]"
+      (deleteRoomHandler)="deleteRoom($event)"
+      (sendMessageHandler)="sendMessage($event)"
+    ></app-room>
+    <div class="addRoomTile">
+      <div
+        *ngIf="!roomToCreate"
+        (click)="roomToCreate = true"
+      >
+        <span class="fa fa-plus fa-5x clickable"></span>
+      </div>
+
+      <input
+        *ngIf="roomToCreate"
+        class="input" type="text" placeholder="First Name" [(ngModel)]='firstName'
+      >
+      <input
+        *ngIf="roomToCreate"
+        class="input" type="text" placeholder="Last Name" [(ngModel)]='lastName'
+      >
+      <button
+        *ngIf="roomToCreate"
+        class="button is-secondary" (click)="onCreateRoom()"
+      >
+        Create room
+      </button>
+    </div>
+  </div>
+
+  <!--
   <div class="hero-foot">
     <div class="navbar is-fixed-bottom has-background-primary">
       <div class="container">
@@ -40,4 +75,5 @@
       </div>
     </div>
   </div>
+  -->
 </div>
