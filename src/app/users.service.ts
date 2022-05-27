@@ -63,4 +63,11 @@ export class UsersService {
     return this.http.post(environment.apiURL + '/register', JSON.stringify(body), this.genHeadersJSON());
   }
 
+  getUserId(firstName: string, lastName: string): any {
+    const body = {
+      first_name: firstName,
+      last_name: lastName
+    };
+    return this.http.post(environment.apiURL + '/getUserId', JSON.stringify(body), this.genHeadersJSON());
+  }
 }

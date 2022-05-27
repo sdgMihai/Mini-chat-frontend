@@ -43,11 +43,11 @@ export class LoginComponent implements OnInit {
 
     // check password via POST request
     this.usersService.validateUser(this.username, this.password).subscribe(
-      (data: { accessToken: string; first_name: string; last_name: string; onlineUsers: string }) => {
+      (data: { accessToken: string; user_id: string; first_name: string; last_name: string }) => {
         console.log('Received data from validation');
         console.log(data);
         if (data) {
-          localStorage.setItem('user', JSON.stringify(new User(undefined, data.first_name, data.last_name)));
+          localStorage.setItem('user', JSON.stringify(new User(data.user_id, data.first_name, data.last_name)));
           localStorage.setItem('jwtToken', data.accessToken);
           this.router.navigateByUrl('/channel');
         } else {

@@ -1,9 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
 import {SocketService} from "../socket.service";
 import {UsersService} from "../users.service";
-import {Message} from "../Message";
-import {User} from "../User";
 import { UserModel } from '../model/user.model';
 import { MessageModel } from '../model/message.model';
 import { MessageToSendModel } from '../model/message-to-send.model';
@@ -14,11 +11,6 @@ import { MessageToSendModel } from '../model/message-to-send.model';
   styleUrls: ['./channel.component.css']
 })
 export class ChannelComponent implements OnInit {
-  user: User;
-  // the messages of the channel
-  messages: Message[];
-  newMessage: string;
-
   thisUser!: UserModel;
   users: Array<UserModel> = [];
   messagesWithUsers: Array<Array<MessageModel>> = [];
@@ -27,107 +19,57 @@ export class ChannelComponent implements OnInit {
   firstName!: string;
   lastName!: string;
 
-  constructor(private router: Router, private usersService: UsersService, private socketService: SocketService) {
+  constructor(private usersService: UsersService, private socketService: SocketService) {
     if (localStorage.getItem('user') != null) {
       // @ts-ignore
       const userJSON = JSON.parse(localStorage.getItem('user'));
-      this.user = new User(undefined, userJSON.first_name, userJSON.last_name);
-    } else {
-      this.user = new User(undefined, undefined, undefined);
-    }
-    this.newMessage = '';
 
-    this.messages = [];
+      console.log('thisUser: ' + userJSON.user_id)
+      this.thisUser = {
+        id: userJSON.user_id,
+        firstName: userJSON.first_name,
+        lastName: userJSON.last_name,
+      };
+    }
   }
 
   ngOnInit(): void {
     this.socketService.getMessage().subscribe((message) => {
-        const msg = new Message(message.first_name + " " + message.last_name
-          , message.data
-          , message.sent_at);
+      let senderIdx = this.users.findIndex((user: UserModel) => user.id === message.sender_id);
+      if (senderIdx === -1) {
+        this.users.push(
+          {
+            id: message.sender_id,
+            firstName: message.first_name,
+            lastName: message.last_name,
+          }
+        );
+        this.messagesWithUsers.push([]);
 
-        this.usersService.addOnlineUser(message.sender_id, message.first_name, message.last_name);
-        this.messages.push(msg);
+        senderIdx = this.users.length - 1;
       }
-    )
+
+      this.messagesWithUsers[senderIdx].push(
+        {
+          sender: {
+            id: message.sender_id,
+            firstName: message.first_name,
+            lastName: message.last_name,
+          },
+          sentAt: message.sent_at,
+          data: message.data,
+        }
+      );
+    });
 
     this.socketService.joinChannel().subscribe(
       (messages) => {
         if (messages) {
-          this.messages.push(...messages);
+          
         }
       }
     );
 
-    // TODO: fill dynamically
-    this.thisUser = {
-      id: '',
-      firstName: 'Armand',
-      lastName: 'Preda',
-    };
-    this.users = [
-      {
-        id: '1cfbb874-f402-43cf-9826-77e45a136bd4',
-        firstName: 'Adrian',
-        lastName: 'Stefan',
-      },
-      {
-        id: "942946a2-911c-4873-895a-9d2ab5719438",
-        firstName: "Mihai",
-        lastName: "Gheoace",
-      },
-    ];
-    this.messagesWithUsers = [
-      [
-        {
-          sender: this.thisUser,
-          sentAt: '11:03',
-          data: 'buna',
-        },
-        {
-          sender: this.users[0],
-          sentAt: '11:04',
-          data: 'buna',
-        },
-      ],
-      [
-        {
-          sender: this.users[1],
-          sentAt: '12:27',
-          data: 'buna',
-        },
-        {
-          sender: this.thisUser,
-          sentAt: '12:28',
-          data: 'buna',
-        },
-        {
-          sender: this.users[1],
-          sentAt: '12:29',
-          data: 'ce faci?',
-        },
-        {
-          sender: this.thisUser,
-          sentAt: '12:30',
-          data: 'bine',
-        },
-        {
-          sender: this.thisUser,
-          sentAt: '12:31',
-          data: 'tu?',
-        },
-        {
-          sender: this.users[1],
-          sentAt: '12:32',
-          data: 'bine',
-        },
-        {
-          sender: this.users[1],
-          sentAt: '12:33',
-          data: 'mesaj lung lung lung lung lung lung lung lung lung lung lung lung lung lung lung',
-        },
-      ],
-    ]
   }
 
   deleteRoom(receiverId: string): void {
@@ -143,9 +85,9 @@ export class ChannelComponent implements OnInit {
       return;
     }
 
-    this.socketService.sendMessage(messageToSend.receiverId, messageToSend.dataToSend);
     const receiverIdx = this.users.findIndex((user: UserModel) => user.id === messageToSend.receiverId);
     if (receiverIdx > -1) {
+      this.socketService.sendMessage(messageToSend.receiverId, messageToSend.dataToSend);
       this.messagesWithUsers[receiverIdx].push(
         {
           sender: this.thisUser,
@@ -161,22 +103,28 @@ export class ChannelComponent implements OnInit {
       return;
     }
 
-    this.roomToCreate = false;
-    this.users.push(
-      {
-        id: '',
-        firstName: this.firstName,
-        lastName: this.lastName,
-      }
-    );
-    this.messagesWithUsers.push([]);
-  }
+    if (this.firstName === this.thisUser.firstName && this.lastName === this.thisUser.lastName) {
+      return;
+    }
 
-  /* send a new message to other user
-  sendMessage() {
-    this.socketService.sendMessage(this.usersService.getOnlineUserId(), this.newMessage);
-    this.messages.push(new Message(this.user.getName(), this.newMessage, Date.now().toString()));
-    this.newMessage = '';
+    this.usersService.getUserId(this.firstName, this.lastName).subscribe(
+      (data: any) => {
+        const userId = data.user_id;
+
+        this.users.push(
+          {
+            id: userId,
+            firstName: this.firstName,
+            lastName: this.lastName,
+          }
+        );
+        this.messagesWithUsers.push([]);
+
+        this.roomToCreate = false;
+      },
+      (err: { name: any; }) => {
+        console.error(err.name);
+      },
+    );
   }
-  */
 }
