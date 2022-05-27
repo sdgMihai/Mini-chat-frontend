@@ -62,15 +62,9 @@ export class SocketService {
       }
     }
     return new Observable((observer: Observer<any>) => {
-      socket.emit("unread_messages", "ready", withTimeout((messages: Message[]) => {
-        if (messages.length >= 1) {
-          unreadMessages.push(...messages);
-        }
-        observer.next(unreadMessages);
-        observer.complete();
-      }, () => {
-        console.log("timeout!");
-      }, 3000));
+      socket.on('unread_messages', (incoming: any) => {
+        observer.next(incoming);
+      });
     });
   }
 
