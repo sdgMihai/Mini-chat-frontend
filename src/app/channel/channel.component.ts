@@ -11,6 +11,8 @@ import { MessageToSendModel } from '../model/message-to-send.model';
   styleUrls: ['./channel.component.css']
 })
 export class ChannelComponent implements OnInit {
+  socket: any;
+
   thisUser!: UserModel;
   users: Array<UserModel> = [];
   messagesWithUsers: Array<Array<MessageModel>> = [];
@@ -34,7 +36,13 @@ export class ChannelComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.socketService.getMessage().subscribe((message) => {
+    this.socket = this.socketService.getSocket();
+
+    this.socketService.getMessage(this.socket).subscribe((message) => {
+      console.log('message: ' + message.sender_id)
+      console.log('message: ' + message.first_name)
+      console.log('message: ' + message.last_name)
+
       let senderIdx = this.users.findIndex((user: UserModel) => user.id === message.sender_id);
       if (senderIdx === -1) {
         this.users.push(
@@ -62,14 +70,15 @@ export class ChannelComponent implements OnInit {
       );
     });
 
-    this.socketService.joinChannel().subscribe(
+    /*
+    this.socketService.joinChannel(this.socket).subscribe(
       (messages) => {
         if (messages) {
           
         }
       }
     );
-
+    */
   }
 
   deleteRoom(receiverId: string): void {
@@ -87,7 +96,8 @@ export class ChannelComponent implements OnInit {
 
     const receiverIdx = this.users.findIndex((user: UserModel) => user.id === messageToSend.receiverId);
     if (receiverIdx > -1) {
-      this.socketService.sendMessage(messageToSend.receiverId, messageToSend.dataToSend);
+      console.log('receiver: ' + messageToSend.receiverId)
+      this.socketService.sendMessage(this.socket, messageToSend.receiverId, messageToSend.dataToSend);
       this.messagesWithUsers[receiverIdx].push(
         {
           sender: this.thisUser,

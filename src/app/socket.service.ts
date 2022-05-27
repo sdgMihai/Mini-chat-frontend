@@ -12,21 +12,25 @@ export class SocketService {
 
   unreadMessages: Message[];
   private url = environment.socketURL;
-  private socket;
 
   constructor() {
-    this.socket = io(this.url, {
-      extraHeaders: {'Authorization': "Bearer " + localStorage.getItem("jwtToken")}
-    });
     this.unreadMessages = [];
 
+    /*
     this.logConnection().subscribe(() => {
+    });
+    */
+  }
+
+  public getSocket() {
+    return io(this.url, {
+      extraHeaders: {'Authorization': "Bearer " + localStorage.getItem("jwtToken")}
     });
   }
 
-  public onlineUsers() {
+  public onlineUsers(socket: any) {
     return new Observable((observer: Observer<any>) => {
-      this.socket.on('online_users', (msg: { users: User[] }) => {
+      socket.on('online_users', (msg: { users: User[] }) => {
         console.log("list of users already online: " + JSON.stringify(msg));
         observer.next(msg);
         observer.complete();
@@ -35,7 +39,7 @@ export class SocketService {
   }
 
 
-  public joinChannel() {
+  public joinChannel(socket: any) {
     let unreadMessages: any[];
     const withTimeout = (onSuccess: { (messages: Message[]): void; apply?: any; }
       , onTimeout: { (): void; (): void; }
@@ -58,7 +62,7 @@ export class SocketService {
       }
     }
     return new Observable((observer: Observer<any>) => {
-      this.socket.emit("unread_messages", "ready", withTimeout((messages: Message[]) => {
+      socket.emit("unread_messages", "ready", withTimeout((messages: Message[]) => {
         if (messages.length >= 1) {
           unreadMessages.push(...messages);
         }
@@ -70,43 +74,43 @@ export class SocketService {
     });
   }
 
-  public logConnection() {
+  public logConnection(socket: any) {
     return new Observable((observer: Observer<any>) => {
-      this.socket.on('connect', () => {
+      socket.on('connect', () => {
         observer.next('connect');
         observer.complete();
       });
     });
   }
 
-  public sendMessage(username: string, message: string) {
+  public sendMessage(socket: any, username: string, message: string) {
     const content = {
       user_id: username,
       message: message,
     };
-    this.socket.emit('send_message', content);
+    socket.emit('send_message', content);
   }
 
-  public newOnlineUser() {
+  public newOnlineUser(socket: any) {
     return new Observable((observer: Observer<any>) => {
-      this.socket.on('new_connection', (msg) => {
+      socket.on('new_connection', (msg: any) => {
         observer.next(msg);
       });
     });
   }
 
-  public userDisconnects() {
+  public userDisconnects(socket: any) {
     return new Observable((observer: Observer<any>) => {
-      this.socket.on('user_disconnect', (user_id) => {
+      socket.on('user_disconnect', (user_id: any) => {
         observer.next(user_id);
         observer.complete();
       });
     });
   }
 
-  public getMessage() {
+  public getMessage(socket: any) {
     return new Observable((observer: Observer<any>) => {
-      this.socket.on('receive_message', (incoming: { sender_id: string, data: string, sent_at: any }) => {
+      socket.on('receive_message', (incoming: { sender_id: string, data: string, sent_at: any }) => {
         observer.next(incoming);
       });
     });

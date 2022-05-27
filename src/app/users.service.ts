@@ -8,9 +8,10 @@ import {SocketService} from "./socket.service";
   providedIn: 'root'
 })
 export class UsersService {
-  onlineUsers: User[];
+  onlineUsers: User[] = [];
 
   constructor(private http: HttpClient, private socketService: SocketService) {
+    /*
     this.onlineUsers = [];
 
     this.socketService.newOnlineUser().subscribe((msg) => {
@@ -26,6 +27,7 @@ export class UsersService {
     this.socketService.onlineUsers().subscribe((msg) => {
       this.onlineUsers.push(msg);
     })
+    */
   }
 
   // generate the headers for content-type as JSON in a POST request
